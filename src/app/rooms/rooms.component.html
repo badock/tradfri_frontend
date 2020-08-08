@@ -1,0 +1,118 @@
+<h2>Ikea</h2>
+
+<div class="card-deck">
+
+  <div class="card border-secondary text-center"
+       *ngFor="let room of home.rooms; let i=index; trackBy:trackByFn">
+    <div class="card-header">{{ room.name }}</div>
+    <div class="card-body text-secondary">
+
+      <div class="container">
+        <!-- Content here -->
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="col-1">
+            <div *ngIf="OneBulbIsOn(room); then thenBlock else elseBlock"></div>
+            <ng-template #thenBlock><a href="#" (click)="switchOffRoom(room)"><span
+              class="oi oi-power-standby lights_on"></span></a></ng-template>
+            <ng-template #elseBlock><a href="#" (click)="switchOnRoom(room)"><span
+              class="oi oi-power-standby lights_off"></span></a></ng-template>
+          </div>
+          <div class="col-8">
+            <input type="range" min="1" max="254" value="{{ ComputeAverageBulbsDimmer(room) }}" class="slider"
+                   id="myRange" (mouseup)="setDimmerRoom(room, $event)">
+          </div>
+          <div class="col-2"></div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div id="accordion_ambiance">
+        <div class="card">
+          <div class="card-header" id="headingOne">
+            <h5 class="mb-0">
+              <button class="btn btn-link" data-toggle="collapse"
+                      [attr.data-target]="'#collapseOne' + generateValidRoomIdentifier(room)"
+                      aria-expanded="true"
+                      aria-controls="collapseOne{{ generateValidRoomIdentifier(room) }}">
+                Select ambiance
+              </button>
+            </h5>
+          </div>
+
+          <div id="collapseOne{{ generateValidRoomIdentifier(room) }}" class="collapse show"
+               aria-labelledby="headingOne"
+               data-parent="#accordion">
+            <div class="card-body">
+              <div class="row">
+                <div class="form-check form-check-inline"
+                     *ngFor="let ambiance of room.ambiances; let i=index; trackBy:trackByFn">
+
+                  <div *ngIf="IsSelectedAmbiance(room, ambiance); then thenBlockAmbiance else elseBlockAmbiance"></div>
+                  <ng-template #thenBlockAmbiance><input class="form-check-input" type="radio" name="inlineRadioOptions_{{ room.id }}"
+                                                         id="inlineRadio_{{ room.id }}_{{ ambiance.id }}"
+                                                         value="{{ ambiance.id }}"
+                                                         [(ngModel)]="room.ambiance_active"
+                                                         (click)="selectAmbianceRoom(room, ambiance)" ng-checked="true"
+                                                         checked>
+                    <label class="form-check-label">{{ ambiance.name }}</label></ng-template>
+                  <ng-template #elseBlockAmbiance><input class="form-check-input" type="radio" name="inlineRadioOptions_{{ room.id }}"
+                                                         id="inlineRadio_{{ room.id }}_{{ ambiance.id }}"
+                                                         value="{{ ambiance.id }}"
+                                                         [(ngModel)]="room.ambiance_active"
+                                                         (click)="selectAmbianceRoom(room, ambiance)">
+                    <label class="form-check-label">{{ ambiance.name }}</label></ng-template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+            <div id="accordion_bulbs">
+
+        <div class="card">
+          <div class="card-header" id="headingTwo">
+            <h5 class="mb-0">
+              <button class="btn btn-link collapsed" data-toggle="collapse"
+                      [attr.data-target]="'#collapseTwo' + generateValidRoomIdentifier(room)"
+                      aria-expanded="false" aria-controls="collapseTwo{{ room.name.replace(' ', '') }}">
+                {{ room.bulbs.length }} device(s)
+              </button>
+            </h5>
+          </div>
+          <div id="collapseTwo{{ generateValidRoomIdentifier(room) }}" class="collapse" aria-labelledby="headingTwo"
+               data-parent="#accordion">
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li *ngFor="let bulb of room.bulbs; let i=index; trackBy:trackByFn" class="list-group-item">
+                  <span>{{bulb.name}}</span>
+
+                  <div class="row">
+                    <div class="col-1">
+                      <div *ngIf="bulb.state; then thenBlockBulb else elseBlockBulb"></div>
+                      <ng-template #thenBlockBulb><a href="#" (click)="switchOffBulb(room, bulb)"><span
+                        class="oi oi-power-standby lights_on"></span></a></ng-template>
+                      <ng-template #elseBlockBulb><a href="#" (click)="switchOnBulb(room, bulb)"><span
+                        class="oi oi-power-standby lights_off"></span></a></ng-template>
+                    </div>
+                    <div class="col-7">
+                      <input type="range" min="1" max="254" value="{{ bulb.dimmer }}" class="slider"
+                             id="myRange" (mouseup)="setDimmerBulb(room, bulb, $event)">
+                    </div>
+                    <div class="col-4"></div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
